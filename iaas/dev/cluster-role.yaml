@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blockchain-service
+  namespace: default
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: blockchain-service
+rules:
+  - apiGroups:
+      - 'rbac.authorization.k8s.io'
+      - 'rbac.authorization.k8s.io/v1'
+    resources:
+      - 'roles'
+      - 'rolebindings'
+      - 'clusterroles'
+      - 'clusterrolebindings'
+    verbs:
+      - '*'
+  - apiGroups:
+      - 'hlf.kungfusoftware.es'
+    resources:
+      - 'fabriccas'
+      - 'fabricorderernodes'
+      - 'fabricpeers'
+      - 'fabricchaincode'
+      - 'fabricmainchannels'
+      - 'fabricfollowerchannels'
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: blockchain-service
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: blockchain-service
+subjects:
+  - kind: ServiceAccount
+    name: blockchain-service
+    namespace: default
+  - kind: ServiceAccount
+    name: default
+    namespace: default

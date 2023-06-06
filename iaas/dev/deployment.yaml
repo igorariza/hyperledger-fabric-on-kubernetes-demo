@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockchain-service-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: blockchain-service
+  template:
+    metadata:
+      labels:
+        app: blockchain-service
+    spec:
+      volumes:
+        - name: 'data'
+          persistentVolumeClaim:
+            claimName: 'data-blockchain-pvc'
+      containers:
+        - name: blockchain-service
+          image: registry/blockchain-service:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - protocol: TCP
+              name: http
+              containerPort: 8080
+          resources:
+            limits:
+              memory: 1024Mi
+              cpu: '0.2'
+            requests:
+              memory: 512Mi
+              cpu: '0.1'
+          envFrom:
+            - secretRef:
+                name: blockchain-service-secrets
+          volumeMounts:
+            - mountPath: '/app/tpchains'
+              name: 'data'
+            - mountPath: '/app/hlf-1.6-networks'
+              name: 'data'

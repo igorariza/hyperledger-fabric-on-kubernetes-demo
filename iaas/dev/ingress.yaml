@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/issuer: cloudflare-issuer
+    cert-manager.io/issuer-kind: OriginIssuer
+    cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+    external-dns.alpha.kubernetes.io/hostname: blockchain.com
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-headers: '*'
+    nginx.ingress.kubernetes.io/cors-allow-methods:
+      PUT, GET, POST, DELETE, PATCH,
+      OPTIONS
+    nginx.ingress.kubernetes.io/cors-expose-headers: '*'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+  name: blockchain
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: blockchain.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: blockchain-service
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - blockchain.com
+      secretName: blockchain-com
